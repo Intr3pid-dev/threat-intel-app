@@ -3,34 +3,35 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore, UserRole } from "@/lib/store";
-import { Shield, Fingerprint, ScanLine, Lock, UserCircle, ShieldAlert, Crosshair } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Shield, Fingerprint, ScanLine, Lock, UserCircle } from "lucide-react";
+
+import { SignUpForm } from "@/components/auth/signup-form";
 
 export default function LoginPage() {
+    const [mode, setMode] = useState<"LOGIN" | "REGISTER">("LOGIN");
     const [username, setUsername] = useState("");
-    const [role, setRole] = useState<UserRole>("analyst");
+    const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const login = useAuthStore((state) => state.login);
     const router = useRouter();
 
     const handleLogin = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!username.trim()) return;
+        if (!username.trim() || !password.trim()) return;
 
         setLoading(true);
 
         // Simulate biometric scan delay
         setTimeout(() => {
-            login(username, role);
-            router.push("/");
-        }, 2000);
+            const success = login(username, password);
+            if (success) {
+                router.push("/");
+            } else {
+                setLoading(false);
+                alert("Access Denied: Invalid Credentials");
+            }
+        }, 1500);
     };
-
-    const roles: { id: UserRole; label: string; icon: any; color: string }[] = [
-        { id: "analyst", label: "Intel Analyst", icon: UserCircle, color: "text-primary" },
-        { id: "hunter", label: "Threat Hunter", icon: Crosshair, color: "text-red-500" },
-        { id: "admin", label: "System Admin", icon: ShieldAlert, color: "text-amber-500" },
-    ];
 
     return (
         <div className="flex min-h-screen items-center justify-center bg-background relative overflow-hidden">
@@ -55,66 +56,72 @@ export default function LoginPage() {
                         <p className="text-xs text-primary/80 font-mono mt-2 tracking-[0.2em]">SECURE ACCESS TERMINAL</p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-6">
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono text-primary/70 uppercase">Operative Identity</label>
-                            <div className="relative">
-                                <UserCircle className="absolute left-3 top-3 h-5 w-5 text-primary/50" />
-                                <input
-                                    type="text"
-                                    value={username}
-                                    onChange={(e) => setUsername(e.target.value)}
-                                    placeholder="ENTER ID..."
-                                    className="h-11 w-full rounded-md border border-primary/20 bg-background/50 pl-10 font-mono text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-muted-foreground/50"
-                                />
+                    {mode === "LOGIN" ? (
+                        <form onSubmit={handleLogin} className="space-y-6 animate-in fade-in slide-in-from-left-10 duration-500">
+                            <div className="space-y-2">
+                                <label className="text-xs font-mono text-primary/70 uppercase">Operative Identity</label>
+                                <div className="relative">
+                                    <UserCircle className="absolute left-3 top-3 h-5 w-5 text-primary/50" />
+                                    <input
+                                        type="text"
+                                        value={username}
+                                        onChange={(e) => setUsername(e.target.value)}
+                                        placeholder="ENTER ID..."
+                                        className="h-11 w-full rounded-md border border-primary/20 bg-background/50 pl-10 font-mono text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-muted-foreground/50"
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="space-y-2">
-                            <label className="text-xs font-mono text-primary/70 uppercase">Clearance Level</label>
-                            <div className="grid grid-cols-3 gap-2">
-                                {roles.map((r) => (
-                                    <button
-                                        key={r.id}
-                                        type="button"
-                                        onClick={() => setRole(r.id)}
-                                        className={cn(
-                                            "flex flex-col items-center justify-center gap-2 rounded-md border p-2 transition-all hover:bg-primary/5",
-                                            role === r.id
-                                                ? "border-primary bg-primary/10 text-primary shadow-[0_0_10px_rgba(255,165,0,0.2)]"
-                                                : "border-primary/20 text-muted-foreground hover:border-primary/50"
-                                        )}
-                                    >
-                                        <r.icon className={cn("h-5 w-5", role === r.id ? "text-primary" : "text-muted-foreground")} />
-                                        <span className="text-[10px] font-mono font-bold uppercase">{r.label}</span>
-                                    </button>
-                                ))}
+                            <div className="space-y-2">
+                                <label className="text-xs font-mono text-primary/70 uppercase">Access Key</label>
+                                <div className="relative">
+                                    <Lock className="absolute left-3 top-3 h-5 w-5 text-primary/50" />
+                                    <input
+                                        type="password"
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        placeholder="ENTER PASSWORD..."
+                                        className="h-11 w-full rounded-md border border-primary/20 bg-background/50 pl-10 font-mono text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-muted-foreground/50"
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading || !username}
-                            className="group relative w-full overflow-hidden rounded-md bg-primary px-4 py-3 text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(255,165,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            <div className="flex items-center justify-center gap-2 relative z-10">
-                                {loading ? (
-                                    <>
-                                        <ScanLine className="h-5 w-5 animate-spin" />
-                                        <span className="font-mono text-sm font-bold tracking-wider">VERIFYING BIOMETRICS...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Fingerprint className="h-5 w-5" />
-                                        <span className="font-mono text-sm font-bold tracking-wider">AUTHENTICATE</span>
-                                    </>
+                            <button
+                                type="submit"
+                                disabled={loading || !username || !password}
+                                className="group relative w-full overflow-hidden rounded-md bg-primary px-4 py-3 text-primary-foreground transition-all hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(255,165,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <div className="flex items-center justify-center gap-2 relative z-10">
+                                    {loading ? (
+                                        <>
+                                            <ScanLine className="h-5 w-5 animate-spin" />
+                                            <span className="font-mono text-sm font-bold tracking-wider">VERIFYING BIOMETRICS...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Fingerprint className="h-5 w-5" />
+                                            <span className="font-mono text-sm font-bold tracking-wider">AUTHENTICATE</span>
+                                        </>
+                                    )}
+                                </div>
+                                {loading && (
+                                    <div className="absolute bottom-0 left-0 h-1 bg-white/50 transition-all duration-[2000ms] ease-out" style={{ width: "100%" }} />
                                 )}
+                            </button>
+
+                            <div className="text-center pt-2">
+                                <button
+                                    type="button"
+                                    onClick={() => setMode("REGISTER")}
+                                    className="text-xs text-muted-foreground hover:text-primary transition-colors font-mono"
+                                >
+                                    NEW OPERATIVE? <span className="underline decoration-primary/50 underline-offset-4">REQUEST CLEARANCE</span>
+                                </button>
                             </div>
-                            {loading && (
-                                <div className="absolute bottom-0 left-0 h-1 bg-white/50 transition-all duration-[2000ms] ease-out" style={{ width: "100%" }} />
-                            )}
-                        </button>
-                    </form>
+                        </form>
+                    ) : (
+                        <SignUpForm onToggleMode={() => setMode("LOGIN")} />
+                    )}
 
                     <div className="mt-8 text-center border-t border-primary/10 pt-4">
                         <div className="flex items-center justify-center gap-2 text-destructive/80 mb-2">

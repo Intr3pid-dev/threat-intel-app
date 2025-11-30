@@ -16,11 +16,16 @@ export const metadata: Metadata = {
   description: "Advanced OSINT and Threat Intelligence Platform",
 };
 
+import { CookieConsent } from "@/components/auth/cookie-consent";
+
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" className="dark">
       <body className={`${inter.variable} ${jetbrainsMono.variable} font-sans antialiased bg-background text-foreground overflow-hidden`}>
@@ -41,6 +46,9 @@ export default function RootLayout({
           </div>
         </AuthGuard>
         <Toaster />
+        <CookieConsent />
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
