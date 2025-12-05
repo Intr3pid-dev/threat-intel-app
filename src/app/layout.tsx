@@ -16,6 +16,12 @@ export const metadata: Metadata = {
   description: "Advanced OSINT and Threat Intelligence Platform",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 import { CookieConsent } from "@/components/auth/cookie-consent";
 
 import { Analytics } from "@vercel/analytics/react";
@@ -33,9 +39,9 @@ export default function RootLayout({
           <ThreatSimulator />
           <div className="flex h-screen w-full">
             <Sidebar />
-            <div className="flex flex-1 flex-col pl-64">
+            <div className="flex flex-1 flex-col md:pl-64">
               <TopBar />
-              <main className="flex-1 overflow-y-auto p-6 relative">
+              <main className="flex-1 overflow-y-auto p-4 md:p-6 relative">
                 <ParticleBackground />
                 <div className="scanline" />
                 <div className="relative z-10">

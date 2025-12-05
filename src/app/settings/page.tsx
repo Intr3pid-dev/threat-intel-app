@@ -53,20 +53,20 @@ export default function SettingsPage() {
             </div>
 
             {/* Tabs */}
-            <div className="flex space-x-1 rounded-lg bg-muted/20 p-1 border border-primary/20 w-fit">
+            <div className="flex space-x-1 rounded-lg bg-muted/20 p-1 border border-primary/20 w-full md:w-fit overflow-x-auto">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id as any)}
                         className={cn(
-                            "flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-all",
+                            "flex items-center gap-2 rounded-md px-3 py-1.5 text-sm font-medium transition-all whitespace-nowrap",
                             activeTab === tab.id
                                 ? "bg-primary text-primary-foreground shadow-sm"
                                 : "text-muted-foreground hover:bg-muted hover:text-foreground"
                         )}
                     >
                         <tab.icon className="h-4 w-4" />
-                        {tab.label}
+                        <span className="hidden sm:inline">{tab.label}</span>
                     </button>
                 ))}
             </div>
