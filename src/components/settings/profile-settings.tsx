@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useAuthStore } from "@/lib/store";
-import { CyberCard } from "@/components/ui/cyber-card";
+import { Card } from "@/components/ui/card";
 import { User, Mail, MapPin, FileText, Save } from "lucide-react";
 import { toast } from "sonner";
 import { SessionTimeoutSettings } from "./session-timeout";
@@ -40,7 +40,7 @@ export function ProfileSettings() {
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <CyberCard title="Operative Profile" icon={<User className="h-4 w-4" />}>
+            <Card title="Operative Profile" icon={<User className="h-4 w-4" />}>
                 <div className="space-y-4">
                     <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
@@ -126,11 +126,11 @@ export function ProfileSettings() {
                         </button>
                     </div>
                 </div>
-            </CyberCard>
+            </Card>
 
-            <CyberCard title="Session Security" icon={<User className="h-4 w-4" />}>
+            <Card title="Session Security" icon={<User className="h-4 w-4" />}>
                 <SessionTimeoutSettings />
-            </CyberCard>
+            </Card>
         </div>
     );
 }

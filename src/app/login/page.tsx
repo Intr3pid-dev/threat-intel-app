@@ -15,22 +15,22 @@ export default function LoginPage() {
     const login = useAuthStore((state) => state.login);
     const router = useRouter();
 
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!username.trim() || !password.trim()) return;
 
         setLoading(true);
 
         // Simulate biometric scan delay
-        setTimeout(() => {
-            const success = login(username, password);
-            if (success) {
-                router.push("/");
-            } else {
-                setLoading(false);
-                alert("Access Denied: Invalid Credentials");
-            }
-        }, 1500);
+        await new Promise(resolve => setTimeout(resolve, 1500));
+
+        const success = await login(username, password);
+        if (success) {
+            router.push("/");
+        } else {
+            setLoading(false);
+            alert("Access Denied: Invalid Credentials");
+        }
     };
 
     return (

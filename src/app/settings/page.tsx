@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CyberCard } from "@/components/ui/cyber-card";
+import { Card } from "@/components/ui/card";
 import { Palette, Monitor, BellRing, User, Activity, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { ProfileSettings } from "@/components/settings/profile-settings";
@@ -75,7 +75,7 @@ export default function SettingsPage() {
             <div className="mt-6">
                 {activeTab === "system" && (
                     <div className="grid gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <CyberCard title="Appearance" icon={<Palette className="h-4 w-4" />}>
+                        <Card title="Appearance" icon={<Palette className="h-4 w-4" />}>
                             <div className="space-y-4">
                                 <label className="text-sm font-medium">Accent Color</label>
                                 <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -97,9 +97,9 @@ export default function SettingsPage() {
                                     ))}
                                 </div>
                             </div>
-                        </CyberCard>
+                        </Card>
 
-                        <CyberCard title="Display" icon={<Monitor className="h-4 w-4" />}>
+                        <Card title="Display" icon={<Monitor className="h-4 w-4" />}>
                             <div className="flex items-center justify-between">
                                 <div className="space-y-0.5">
                                     <label className="text-sm font-medium">Reduced Motion</label>
@@ -118,9 +118,9 @@ export default function SettingsPage() {
                                     />
                                 </button>
                             </div>
-                        </CyberCard>
+                        </Card>
 
-                        <CyberCard title="Notifications" icon={<BellRing className="h-4 w-4" />}>
+                        <Card title="Notifications" icon={<BellRing className="h-4 w-4" />}>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between border-b border-border/50 pb-4">
                                     <div className="space-y-0.5">
@@ -145,7 +145,7 @@ export default function SettingsPage() {
                                     </div>
                                 </div>
                             </div>
-                        </CyberCard>
+                        </Card>
                     </div>
                 )}
 

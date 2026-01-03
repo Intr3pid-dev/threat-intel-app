@@ -53,10 +53,10 @@ export function Sidebar() {
                 )}
             >
                 {/* Header */}
-                <div className="flex h-16 items-center justify-between border-b border-border px-6">
+                <div className="flex h-16 items-center justify-between border-b border-border px-6 bg-card">
                     <div className="flex items-center gap-2">
-                        <Shield className="h-8 w-8 text-primary animate-pulse" />
-                        <span className="font-mono text-xl font-bold tracking-tighter text-glow">
+                        <Shield className="h-8 w-8 text-primary" />
+                        <span className="font-sans text-lg font-bold tracking-tight text-foreground">
                             NETWATCH
                         </span>
                     </div>
@@ -79,10 +79,10 @@ export function Sidebar() {
                                 key={item.href}
                                 href={item.href}
                                 className={cn(
-                                    "flex items-center gap-3 rounded-md px-4 py-3 text-sm font-medium transition-all",
+                                    "flex items-center gap-3 rounded-md px-4 py-3 text-sm font-medium transition-all duration-200",
                                     isActive
-                                        ? "bg-primary/10 text-primary shadow-[0_0_10px_rgba(0,243,255,0.1)]"
-                                        : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                        ? "bg-primary text-primary-foreground shadow-subtle"
+                                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                 )}
                             >
                                 <item.icon className="h-5 w-5" />
@@ -103,7 +103,7 @@ export function Sidebar() {
                         </div>
                     </div>
                 </div>
-            </aside>
+            </aside >
         </>
     );
 }

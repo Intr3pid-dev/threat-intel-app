@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { CyberCard } from "@/components/ui/cyber-card";
+import { Card } from "@/components/ui/card";
 import { Search, Globe, Calendar, Shield, Server, AlertTriangle, CheckCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -75,7 +75,7 @@ export default function DomainLookupPage() {
                 <h1 className="text-3xl font-bold tracking-tight text-glow">Domain Lookup</h1>
             </div>
 
-            <CyberCard>
+            <Card>
                 <form onSubmit={handleSearch} className="flex gap-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
@@ -95,12 +95,12 @@ export default function DomainLookupPage() {
                         {loading ? "Analyzing..." : "Lookup"}
                     </button>
                 </form>
-            </CyberCard>
+            </Card>
 
             {whoisData && reputation && (
                 <div className="grid gap-6 md:grid-cols-2">
                     {/* Threat Intelligence */}
-                    <CyberCard title="Threat Intelligence" icon={<Shield className="h-4 w-4" />}>
+                    <Card title="Threat Intelligence" icon={<Shield className="h-4 w-4" />}>
                         <div className="space-y-4">
                             <div className="flex items-center gap-4">
                                 <div className={cn(
@@ -151,10 +151,10 @@ export default function DomainLookupPage() {
                                 </div>
                             )}
                         </div>
-                    </CyberCard>
+                    </Card>
 
                     {/* WHOIS Information */}
-                    <CyberCard title="WHOIS Information" icon={<Globe className="h-4 w-4" />}>
+                    <Card title="WHOIS Information" icon={<Globe className="h-4 w-4" />}>
                         <div className="space-y-3">
                             <div>
                                 <p className="text-xs text-muted-foreground">Domain</p>
@@ -187,10 +187,10 @@ export default function DomainLookupPage() {
                                 </div>
                             </div>
                         </div>
-                    </CyberCard>
+                    </Card>
 
                     {/* Name Servers */}
-                    <CyberCard title="Name Servers" icon={<Server className="h-4 w-4" />}>
+                    <Card title="Name Servers" icon={<Server className="h-4 w-4" />}>
                         <div className="space-y-2">
                             {whoisData.nameServers && whoisData.nameServers.length > 0 ? (
                                 whoisData.nameServers.map((ns: string, i: number) => (
@@ -202,10 +202,10 @@ export default function DomainLookupPage() {
                                 <p className="text-sm text-muted-foreground">No nameserver information available</p>
                             )}
                         </div>
-                    </CyberCard>
+                    </Card>
 
                     {/* Additional Details */}
-                    <CyberCard title="Additional Details" icon={<Calendar className="h-4 w-4" />}>
+                    <Card title="Additional Details" icon={<Calendar className="h-4 w-4" />}>
                         <div className="space-y-3">
                             <div>
                                 <p className="text-xs text-muted-foreground">Registrant Organization</p>
@@ -235,7 +235,7 @@ export default function DomainLookupPage() {
                                 <p className="text-xs text-muted-foreground">Data Source: {whoisData.source}</p>
                             </div>
                         </div>
-                    </CyberCard>
+                    </Card>
                 </div>
             )}
         </div>

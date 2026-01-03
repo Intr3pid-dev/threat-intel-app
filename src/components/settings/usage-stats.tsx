@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthStore } from "@/lib/store";
-import { CyberCard } from "@/components/ui/cyber-card";
+import { Card } from "@/components/ui/card";
 import { Activity, Search, ShieldAlert, FileText, Clock } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
@@ -55,7 +55,7 @@ export function UsageStats() {
                 />
             </div>
 
-            <CyberCard title="Activity Visualization" icon={<Activity className="h-4 w-4" />}>
+            <Card title="Activity Visualization" icon={<Activity className="h-4 w-4" />}>
                 <div className="h-[300px] w-full mt-4">
                     <ResponsiveContainer width="100%" height="100%">
                         <BarChart data={data} layout="vertical" margin={{ left: 20 }}>
@@ -82,7 +82,7 @@ export function UsageStats() {
                         </BarChart>
                     </ResponsiveContainer>
                 </div>
-            </CyberCard>
+            </Card>
         </div>
     );
 }

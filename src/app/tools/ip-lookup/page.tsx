@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { CyberCard } from "@/components/ui/cyber-card";
+import { Card } from "@/components/ui/card";
 import { Search, MapPin, Globe, Shield, Server } from "lucide-react";
 import dynamic from "next/dynamic";
 
@@ -64,7 +64,7 @@ export default function IPLookupPage() {
                 <h1 className="text-3xl font-bold tracking-tight text-glow">IP Lookup</h1>
             </div>
 
-            <CyberCard>
+            <Card>
                 <form onSubmit={handleSearch} className="flex gap-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
@@ -84,11 +84,11 @@ export default function IPLookupPage() {
                         {loading ? "Scanning..." : "Analyze"}
                     </button>
                 </form>
-            </CyberCard>
+            </Card>
 
             {result && (
                 <div className="grid gap-6 md:grid-cols-2">
-                    <CyberCard title="Geo-Location" icon={<MapPin className="h-4 w-4" />}>
+                    <Card title="Geo-Location" icon={<MapPin className="h-4 w-4" />}>
                         <div className="space-y-4">
                             <div className="aspect-video w-full rounded-md bg-muted/20 border border-border/50 overflow-hidden relative">
                                 <MapComponent lat={result.lat || 37.7749} lng={result.lng || -122.4194} popupText={result.location} />
@@ -104,10 +104,10 @@ export default function IPLookupPage() {
                                 </div>
                             </div>
                         </div>
-                    </CyberCard>
+                    </Card>
 
                     <div className="space-y-6">
-                        <CyberCard title="Network Info" icon={<Server className="h-4 w-4" />}>
+                        <Card title="Network Info" icon={<Server className="h-4 w-4" />}>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <p className="text-xs text-muted-foreground">ISP</p>
@@ -118,9 +118,9 @@ export default function IPLookupPage() {
                                     <p className="font-mono text-sm">{result.asn}</p>
                                 </div>
                             </div>
-                        </CyberCard>
+                        </Card>
 
-                        <CyberCard title="Threat Intelligence" icon={<Shield className="h-4 w-4" />}>
+                        <Card title="Threat Intelligence" icon={<Shield className="h-4 w-4" />}>
                             <div className="flex items-center gap-4">
                                 <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-green-500/50 bg-green-500/10">
                                     <span className="text-xl font-bold text-green-500">{result.score}%</span>
@@ -137,7 +137,7 @@ export default function IPLookupPage() {
                                     </span>
                                 ))}
                             </div>
-                        </CyberCard>
+                        </Card>
                     </div>
                 </div>
             )}

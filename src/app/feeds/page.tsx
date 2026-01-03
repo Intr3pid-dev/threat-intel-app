@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CyberCard } from "@/components/ui/cyber-card";
+import { Card } from "@/components/ui/card";
 import { Shield, Calendar, Tag } from "lucide-react";
 import { FeedDetailModal } from "@/components/ui/feed-detail-modal";
 
@@ -52,21 +52,21 @@ export default function FeedsPage() {
                 </div>
 
                 {loading ? (
-                    <CyberCard>
+                    <Card>
                         <div className="flex items-center justify-center py-12">
                             <div className="text-muted-foreground">Loading threat feeds...</div>
                         </div>
-                    </CyberCard>
+                    </Card>
                 ) : (
                     <div className="grid gap-4">
                         {feeds.map((feed) => (
-                            <CyberCard key={feed.id}>
+                            <Card key={feed.id}>
                                 <div className="flex items-start justify-between gap-4">
                                     <div className="flex-1 space-y-2">
                                         <div className="flex items-center gap-2">
                                             <span className={`rounded-full px-2 py-1 text-xs font-bold ${feed.severity === 'Critical' ? 'bg-red-500/20 text-red-500' :
-                                                    feed.severity === 'High' ? 'bg-orange-500/20 text-orange-500' :
-                                                        'bg-yellow-500/20 text-yellow-500'
+                                                feed.severity === 'High' ? 'bg-orange-500/20 text-orange-500' :
+                                                    'bg-yellow-500/20 text-yellow-500'
                                                 }`}>
                                                 {feed.severity}
                                             </span>
@@ -101,7 +101,7 @@ export default function FeedsPage() {
                                         Read Report
                                     </button>
                                 </div>
-                            </CyberCard>
+                            </Card>
                         ))}
                     </div>
                 )}

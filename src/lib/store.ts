@@ -11,7 +11,6 @@ export interface User {
     email?: string;
     bio?: string;
     location?: string;
-    password?: string; // Simulated hash
 }
 
 export interface UsageStats {
@@ -34,12 +33,12 @@ export interface Notification {
 interface AuthState {
     user: User | null;
     isAuthenticated: boolean;
-    registeredUsers: User[];
+    lastActive: number;
     notifications: Notification[];
-    lastActivity: number;
-    login: (name: string, password?: string) => boolean;
-    register: (user: User) => boolean;
-    logout: () => void;
+    login: (email: string, password?: string) => Promise<boolean>;
+    register: (user: Partial<User> & { password?: string }) => Promise<boolean>;
+    logout: () => Promise<void>;
+    checkSession: () => Promise<void>;
     addNotification: (notification: Omit<Notification, 'id' | 'timestamp' | 'read'>) => void;
     markAsRead: (id: string) => void;
     markAllAsRead: () => void;
@@ -54,7 +53,6 @@ interface AuthState {
     usageStats: UsageStats;
     incrementUsage: (metric: keyof Omit<UsageStats, 'lastActive'>) => void;
     updateActivity: () => void;
-    checkSessionTimeout: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -62,43 +60,74 @@ export const useAuthStore = create<AuthState>()(
         (set, get) => ({
             user: null,
             isAuthenticated: false,
-            registeredUsers: [],
+            lastActive: Date.now(),
             notifications: [],
-            lastActivity: Date.now(),
 
-            login: (name, password) => {
-                const { registeredUsers } = get();
-                const user = registeredUsers.find(u => u.name === name && u.password === password);
+            login: async (email, password) => {
+                try {
+                    const res = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password }),
+                    });
 
-                if (user) {
-                    set({ user, isAuthenticated: true, lastActivity: Date.now() });
-                    return true;
+                    if (res.ok) {
+                        const user = await res.json();
+                        set({ user, isAuthenticated: true });
+                        return true;
+                    }
+                    return false;
+                } catch (error) {
+                    console.error("Login failed", error);
+                    return false;
                 }
-                return false;
             },
 
-            register: (newUser) => {
-                const { registeredUsers } = get();
-                if (registeredUsers.some(u => u.name === newUser.name)) {
-                    return false; // User exists
+            register: async (newUser) => {
+                try {
+                    const res = await fetch('/api/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(newUser),
+                    });
+
+                    if (res.ok) {
+                        const user = await res.json();
+                        set({ user, isAuthenticated: true });
+                        return true;
+                    }
+                    return false;
+                } catch (error) {
+                    console.error("Registration failed", error);
+                    return false;
                 }
-
-                const userWithId = {
-                    ...newUser,
-                    id: Math.random().toString(36).substr(2, 9),
-                    avatar: '/avatar-placeholder.png'
-                };
-
-                set({
-                    registeredUsers: [...registeredUsers, userWithId],
-                    user: userWithId,
-                    isAuthenticated: true,
-                    lastActivity: Date.now()
-                });
-                return true;
             },
 
-            logout: () => set({ user: null, isAuthenticated: false }),
+            logout: async () => {
+                try {
+                    await fetch('/api/auth/me', { method: 'DELETE' });
+                } catch (e) {
+                    console.error(e);
+                }
+                set({ user: null, isAuthenticated: false });
+            },
+
+            checkSession: async () => {
+                try {
+                    const res = await fetch('/api/auth/me');
+                    if (res.ok) {
+                        const user = await res.json();
+                        if (user) {
+                            set({ user, isAuthenticated: true });
+                            return;
+                        }
+                    }
+                    // If check fails or returns 401, clear state
+                    set({ user: null, isAuthenticated: false });
+                } catch (error) {
+                    set({ user: null, isAuthenticated: false });
+                }
+            },
 
             addNotification: (notification) => set((state) => ({
                 notifications: [
@@ -109,7 +138,7 @@ export const useAuthStore = create<AuthState>()(
                         read: false
                     },
                     ...state.notifications
-                ].slice(0, 50) // Keep last 50 notifications
+                ].slice(0, 50)
             })),
 
             markAsRead: (id) => set((state) => ({
@@ -125,9 +154,9 @@ export const useAuthStore = create<AuthState>()(
             clearNotifications: () => set({ notifications: [] }),
 
             preferences: {
-                theme: 'dark',
+                theme: 'light', // Default to modern light
                 notifications: true,
-                sessionTimeout: 15 // 15 minutes default
+                sessionTimeout: 15
             },
 
             setPreferences: (prefs) => set((state) => ({
@@ -136,10 +165,6 @@ export const useAuthStore = create<AuthState>()(
 
             updateProfile: (data) => set((state) => ({
                 user: state.user ? { ...state.user, ...data } : null,
-                // Also update the user in the registered list
-                registeredUsers: state.registeredUsers.map(u =>
-                    u.id === state.user?.id ? { ...u, ...data } : u
-                )
             })),
 
             usageStats: {
@@ -157,37 +182,18 @@ export const useAuthStore = create<AuthState>()(
                 }
             })),
 
-            updateActivity: () => set({ lastActivity: Date.now() }),
-
-            checkSessionTimeout: () => {
-                const state = get();
-                if (!state.isAuthenticated) return;
-
-                const now = Date.now();
-                const timeoutMs = state.preferences.sessionTimeout * 60 * 1000;
-                const timeSinceActivity = now - state.lastActivity;
-
-                if (timeSinceActivity > timeoutMs) {
-                    set({ user: null, isAuthenticated: false });
-                    // Optionally add a notification
-                    get().addNotification({
-                        title: 'Session Expired',
-                        message: 'Your session has expired due to inactivity.',
-                        type: 'warning'
-                    });
-                }
-            }
+            updateActivity: () => set({ lastActive: Date.now() }),
         }),
         {
             name: 'netwatch-storage',
             partialize: (state) => ({
-                registeredUsers: state.registeredUsers,
                 preferences: state.preferences,
                 usageStats: state.usageStats,
-                // Optionally persist current user session
-                user: state.user,
-                isAuthenticated: state.isAuthenticated
+                // Do NOT persist user/auth locally anymore (except maybe for offline support, but for security, rely on session check)
+                // Actually, for better UX on refresh before API returns, we might want to keep it, but session cookie is source of truth.
+                // Let's not persist auth state, let checkSession handle it.
             }),
         }
     )
 );
+

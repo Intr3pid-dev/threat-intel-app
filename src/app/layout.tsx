@@ -4,7 +4,6 @@ import "./globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
 import { TopBar } from "@/components/layout/topbar";
 import { Toaster } from "@/components/ui/toaster";
-import { ParticleBackground } from "@/components/ui/particle-background";
 import { AuthGuard } from "@/components/auth/auth-guard";
 import { ThreatSimulator } from "@/components/simulation/threat-simulator";
 
@@ -41,9 +40,7 @@ export default function RootLayout({
             <Sidebar />
             <div className="flex flex-1 flex-col md:pl-64">
               <TopBar />
-              <main className="flex-1 overflow-y-auto p-4 md:p-6 relative">
-                <ParticleBackground />
-                <div className="scanline" />
+              <main className="flex-1 overflow-y-auto p-4 md:p-6 relative bg-muted/20">
                 <div className="relative z-10">
                   {children}
                 </div>

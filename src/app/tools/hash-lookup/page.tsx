@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { CyberCard } from "@/components/ui/cyber-card";
+import { Card } from "@/components/ui/card";
 import { Search, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -62,7 +62,7 @@ export default function HashLookupPage() {
                 <h1 className="text-3xl font-bold tracking-tight text-glow">Hash Analysis</h1>
             </div>
 
-            <CyberCard>
+            <Card>
                 <form onSubmit={handleSearch} className="flex gap-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
@@ -82,12 +82,12 @@ export default function HashLookupPage() {
                         {loading ? "Analyzing..." : "Scan Hash"}
                     </button>
                 </form>
-            </CyberCard>
+            </Card>
 
             {result && (
                 <div className="space-y-6">
                     <div className="grid gap-6 md:grid-cols-3">
-                        <CyberCard className="md:col-span-1" title="Verdict">
+                        <Card className="md:col-span-1" title="Verdict">
                             <div className="flex flex-col items-center justify-center py-6">
                                 <div className="relative flex h-32 w-32 items-center justify-center rounded-full border-4 border-destructive/50 bg-destructive/10">
                                     <div className="text-center">
@@ -111,9 +111,9 @@ export default function HashLookupPage() {
                                     <p className="text-sm text-muted-foreground">{result.family}</p>
                                 </div>
                             </div>
-                        </CyberCard>
+                        </Card>
 
-                        <CyberCard className="md:col-span-2" title="File Details">
+                        <Card className="md:col-span-2" title="File Details">
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="col-span-2">
                                     <p className="text-xs text-muted-foreground">Hash</p>
@@ -132,11 +132,11 @@ export default function HashLookupPage() {
                                     </div>
                                 )}
                             </div>
-                        </CyberCard>
+                        </Card>
                     </div>
 
                     {result.engines && result.engines.details && (
-                        <CyberCard title="Engine Detection Results">
+                        <Card title="Engine Detection Results">
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 {result.engines.details.map((engine: any, i: number) => (
                                     <div key={i} className="flex items-center justify-between rounded-md border border-border/50 bg-muted/20 p-3">
@@ -150,7 +150,7 @@ export default function HashLookupPage() {
                                     </div>
                                 ))}
                             </div>
-                        </CyberCard>
+                        </Card>
                     )}
                 </div>
             )}

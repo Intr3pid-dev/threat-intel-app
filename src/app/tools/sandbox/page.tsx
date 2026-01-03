@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { CyberCard } from "@/components/ui/cyber-card";
+import { Card } from "@/components/ui/card";
 import { Upload, Play, Terminal, Activity, Network, FileCode, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -62,7 +62,7 @@ export default function SandboxPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
                 {/* Left Panel: Upload & Controls */}
                 <div className="space-y-6 flex flex-col">
-                    <CyberCard className="flex-1 flex flex-col justify-center items-center border-dashed border-2 border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer">
+                    <Card className="flex-1 flex flex-col justify-center items-center border-dashed border-2 border-primary/30 bg-primary/5 hover:bg-primary/10 transition-colors cursor-pointer">
                         <Upload className="h-12 w-12 text-primary mb-4" />
                         <h3 className="text-lg font-bold text-foreground">Upload Sample</h3>
                         <p className="text-sm text-muted-foreground text-center max-w-xs mt-2">
@@ -71,9 +71,9 @@ export default function SandboxPage() {
                         <button className="mt-6 rounded-md bg-primary px-6 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90">
                             Browse Files
                         </button>
-                    </CyberCard>
+                    </Card>
 
-                    <CyberCard title="Control Panel">
+                    <Card title="Control Panel">
                         <div className="space-y-4">
                             <div className="flex justify-between text-sm">
                                 <span className="text-muted-foreground">OS Version</span>
@@ -96,12 +96,12 @@ export default function SandboxPage() {
                                 {analyzing ? "Running Analysis..." : "Detonate Payload"}
                             </button>
                         </div>
-                    </CyberCard>
+                    </Card>
                 </div>
 
                 {/* Middle Panel: Console & Process Tree */}
                 <div className="lg:col-span-2 flex flex-col gap-6 min-h-0">
-                    <CyberCard title="Live Execution Log" icon={<Terminal className="h-4 w-4" />} className="flex-1 flex flex-col min-h-0">
+                    <Card title="Live Execution Log" icon={<Terminal className="h-4 w-4" />} className="flex-1 flex flex-col min-h-0">
                         <div className="flex-1 overflow-y-auto bg-black/50 p-4 font-mono text-xs space-y-1 rounded-md border border-border/50 h-64">
                             {logs.length === 0 && (
                                 <div className="h-full flex items-center justify-center text-muted-foreground">
@@ -127,10 +127,10 @@ export default function SandboxPage() {
                                 <div className="h-full bg-primary transition-all duration-300" style={{ width: `${progress}%` }} />
                             </div>
                         )}
-                    </CyberCard>
+                    </Card>
 
                     <div className="grid grid-cols-2 gap-6 h-1/3 shrink-0">
-                        <CyberCard title="Process Tree" icon={<Activity className="h-4 w-4" />}>
+                        <Card title="Process Tree" icon={<Activity className="h-4 w-4" />}>
                             <div className="space-y-2 text-sm font-mono">
                                 <div className="flex items-center gap-2">
                                     <FileCode className="h-4 w-4 text-muted-foreground" />
@@ -151,9 +151,9 @@ export default function SandboxPage() {
                                     </div>
                                 </div>
                             </div>
-                        </CyberCard>
+                        </Card>
 
-                        <CyberCard title="Network Graph" icon={<Network className="h-4 w-4" />}>
+                        <Card title="Network Graph" icon={<Network className="h-4 w-4" />}>
                             <div className="h-full flex items-center justify-center bg-muted/10 rounded-md relative overflow-hidden">
                                 {/* Mock Graph Visualization */}
                                 <div className="absolute inset-0 flex items-center justify-center">
@@ -171,7 +171,7 @@ export default function SandboxPage() {
                                     {analyzing ? "Traffic Detected" : "Idle"}
                                 </span>
                             </div>
-                        </CyberCard>
+                        </Card>
                     </div>
                 </div>
             </div>

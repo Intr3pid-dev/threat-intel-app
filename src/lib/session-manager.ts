@@ -8,18 +8,14 @@ let activityTimer: NodeJS.Timeout | null = null;
  * Tracks user activity and enforces session timeout
  */
 export function useSessionManager() {
-    const checkSessionTimeout = useAuthStore((state) => state.checkSessionTimeout);
+    const logout = useAuthStore((state) => state.logout);
     const updateActivity = useAuthStore((state) => state.updateActivity);
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const lastActive = useAuthStore((state) => state.lastActive);
+    const sessionTimeout = useAuthStore((state) => state.preferences.sessionTimeout);
 
     useEffect(() => {
-        if (!isAuthenticated) {
-            if (activityTimer) {
-                clearInterval(activityTimer);
-                activityTimer = null;
-            }
-            return;
-        }
+        if (!isAuthenticated) return;
 
         // Track user activity
         const handleActivity = () => {
@@ -32,19 +28,20 @@ export function useSessionManager() {
             window.addEventListener(event, handleActivity);
         });
 
-        // Check session timeout every minute
-        activityTimer = setInterval(() => {
-            checkSessionTimeout();
+        // Check timeout
+        const timer = setInterval(() => {
+            const now = Date.now();
+            const timeoutMs = sessionTimeout * 60 * 1000;
+            if (now - lastActive > timeoutMs) {
+                logout();
+            }
         }, 60 * 1000); // Check every minute
 
         return () => {
             events.forEach(event => {
                 window.removeEventListener(event, handleActivity);
             });
-            if (activityTimer) {
-                clearInterval(activityTimer);
-                activityTimer = null;
-            }
+            clearInterval(timer);
         };
-    }, [isAuthenticated, checkSessionTimeout, updateActivity]);
+    }, [isAuthenticated, lastActive, sessionTimeout, logout, updateActivity]);
 }

@@ -20,36 +20,36 @@ export function SignUpForm({ onToggleMode }: SignUpFormProps) {
     const register = useAuthStore((state) => state.register);
     const router = useRouter();
 
-    const handleSignUp = (e: React.FormEvent) => {
+    const handleSignUp = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!username.trim() || !email.trim() || !password.trim()) return;
 
         setLoading(true);
 
         // Simulate API call delay
-        setTimeout(() => {
-            const success = register({
-                id: "", // ID generated in store
-                name: username,
-                email,
-                password, // In real app, hash this!
-                role,
-                bio: "New Operative",
-                location: "Unknown"
-            });
+        await new Promise(resolve => setTimeout(resolve, 1500));
 
-            if (success) {
-                // Persist preferences if consent given
-                if (Cookies.get("cookie-consent") === "true") {
-                    Cookies.set("user-role-pref", role, { expires: 30 });
-                }
-                router.push("/");
-            } else {
-                setLoading(false);
-                // Simple alert for now, could be a toast
-                alert("Operative identity already exists.");
+        const success = await register({
+            id: "", // ID generated in store
+            name: username,
+            email,
+            password, // In real app, hash this!
+            role,
+            bio: "New Operative",
+            location: "Unknown"
+        });
+
+        if (success) {
+            // Persist preferences if consent given
+            if (Cookies.get("cookie-consent") === "true") {
+                Cookies.set("user-role-pref", role, { expires: 30 });
             }
-        }, 1500);
+            router.push("/");
+        } else {
+            setLoading(false);
+            // Simple alert for now, could be a toast
+            alert("Operative identity already exists.");
+        }
     };
 
     const roles: { id: UserRole; label: string; icon: any; color: string }[] = [
