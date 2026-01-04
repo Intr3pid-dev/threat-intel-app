@@ -61,7 +61,7 @@ export default function IPLookupPage() {
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold tracking-tight text-glow">IP Lookup</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-foreground">IP Lookup</h1>
             </div>
 
             <Card>
@@ -86,61 +86,63 @@ export default function IPLookupPage() {
                 </form>
             </Card>
 
-            {result && (
-                <div className="grid gap-6 md:grid-cols-2">
-                    <Card title="Geo-Location" icon={<MapPin className="h-4 w-4" />}>
-                        <div className="space-y-4">
-                            <div className="aspect-video w-full rounded-md bg-muted/20 border border-border/50 overflow-hidden relative">
-                                <MapComponent lat={result.lat || 37.7749} lng={result.lng || -122.4194} popupText={result.location} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-xs text-muted-foreground">City/Country</p>
-                                    <p className="font-mono text-sm">{result.location}</p>
+            {
+                result && (
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <Card title="Geo-Location" icon={<MapPin className="h-4 w-4" />}>
+                            <div className="space-y-4">
+                                <div className="aspect-video w-full rounded-md bg-muted/20 border border-border/50 overflow-hidden relative">
+                                    <MapComponent lat={result.lat || 37.7749} lng={result.lng || -122.4194} popupText={result.location} />
                                 </div>
-                                <div>
-                                    <p className="text-xs text-muted-foreground">Coordinates</p>
-                                    <p className="font-mono text-sm">{result.coordinates}</p>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p className="text-xs text-muted-foreground">City/Country</p>
+                                        <p className="font-mono text-sm">{result.location}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-muted-foreground">Coordinates</p>
+                                        <p className="font-mono text-sm">{result.coordinates}</p>
+                                    </div>
                                 </div>
                             </div>
+                        </Card>
+
+                        <div className="space-y-6">
+                            <Card title="Network Info" icon={<Server className="h-4 w-4" />}>
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <p className="text-xs text-muted-foreground">ISP</p>
+                                        <p className="font-mono text-sm">{result.isp}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-muted-foreground">ASN</p>
+                                        <p className="font-mono text-sm">{result.asn}</p>
+                                    </div>
+                                </div>
+                            </Card>
+
+                            <Card title="Threat Intelligence" icon={<Shield className="h-4 w-4" />}>
+                                <div className="flex items-center gap-4">
+                                    <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-green-500/50 bg-green-500/10">
+                                        <span className="text-xl font-bold text-green-500">{result.score}%</span>
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-foreground">Clean</p>
+                                        <p className="text-xs text-muted-foreground">No malicious activity detected recently.</p>
+                                    </div>
+                                </div>
+                                <div className="mt-4 flex gap-2">
+                                    {result.tags.map((tag: string) => (
+                                        <span key={tag} className="rounded-full border border-primary/30 bg-primary/10 px-2 py-1 text-[10px] text-primary">
+                                            {tag}
+                                        </span>
+                                    ))}
+                                </div>
+                            </Card>
                         </div>
-                    </Card>
-
-                    <div className="space-y-6">
-                        <Card title="Network Info" icon={<Server className="h-4 w-4" />}>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-xs text-muted-foreground">ISP</p>
-                                    <p className="font-mono text-sm">{result.isp}</p>
-                                </div>
-                                <div>
-                                    <p className="text-xs text-muted-foreground">ASN</p>
-                                    <p className="font-mono text-sm">{result.asn}</p>
-                                </div>
-                            </div>
-                        </Card>
-
-                        <Card title="Threat Intelligence" icon={<Shield className="h-4 w-4" />}>
-                            <div className="flex items-center gap-4">
-                                <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-green-500/50 bg-green-500/10">
-                                    <span className="text-xl font-bold text-green-500">{result.score}%</span>
-                                </div>
-                                <div>
-                                    <p className="font-medium text-foreground">Clean</p>
-                                    <p className="text-xs text-muted-foreground">No malicious activity detected recently.</p>
-                                </div>
-                            </div>
-                            <div className="mt-4 flex gap-2">
-                                {result.tags.map((tag: string) => (
-                                    <span key={tag} className="rounded-full border border-primary/30 bg-primary/10 px-2 py-1 text-[10px] text-primary">
-                                        {tag}
-                                    </span>
-                                ))}
-                            </div>
-                        </Card>
                     </div>
-                </div>
-            )}
-        </div>
+                )
+            }
+        </div >
     );
 }

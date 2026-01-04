@@ -2,18 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Shield, Activity, Globe, Server } from "lucide-react";
+import { Search, Shield, Activity, Globe, Server, Hash, LayoutGrid } from "lucide-react";
 import { ThreatMap } from "@/components/ui/threat-map";
-import { Card } from "@/components/ui/card"; // Assuming we want to use standard Card or rename CyberCard
+import { Card } from "@/components/ui/card";
+import { SystemHealth } from "@/components/dashboard/system-health";
+import { EventLog } from "@/components/dashboard/event-log";
+import { QuickTools } from "@/components/dashboard/quick-tools";
 
 export default function Dashboard() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchType, setSearchType] = useState<"auto" | "ip" | "hash" | "domain" | "actor">("auto");
   const [stats, setStats] = useState({
     activeThreats: 0,
     globalSensors: 0,
-    monitoringStatus: "Loading..."
+    monitoringStatus: "Init...",
+    activeSessions: 0
   });
 
   useEffect(() => {
@@ -23,140 +26,112 @@ export default function Dashboard() {
       .catch(console.error);
   }, []);
 
-  const detectSearchType = (query: string): "ip" | "hash" | "domain" | "actor" => {
-    const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
-    if (ipPattern.test(query)) return "ip";
-
-    const hashPattern = /^[a-fA-F0-9]{32}$|^[a-fA-F0-9]{40}$|^[a-fA-F0-9]{64}$/;
-    if (hashPattern.test(query)) return "hash";
-
-    const domainPattern = /^([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}$/;
-    if (domainPattern.test(query)) return "domain";
-
-    return "actor";
-  };
-
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-
-    const type = searchType === "auto" ? detectSearchType(searchQuery) : searchType;
-
-    switch (type) {
-      case "ip":
-        router.push(`/tools/ip-lookup?q=${encodeURIComponent(searchQuery)}`);
-        break;
-      case "hash":
-        router.push(`/tools/hash-lookup?q=${encodeURIComponent(searchQuery)}`);
-        break;
-      case "domain":
-        router.push(`/tools/domain-lookup?q=${encodeURIComponent(searchQuery)}`);
-        break;
-      case "actor":
-        router.push(`/feeds?q=${encodeURIComponent(searchQuery)}`);
-        break;
-    }
+    // Simple auto-routing for dense UI
+    router.push(`/tools/ip-lookup?q=${encodeURIComponent(searchQuery)}`);
   };
 
   return (
-    <>
-      <ThreatMap />
+    <div className="flex flex-col h-[calc(100vh-3.5rem)] gap-2 p-2 overflow-hidden bg-background text-foreground">
+      {/* Top Section: Map & Key Stats (Approx 60% height) */}
+      <div className="grid grid-cols-12 gap-2 flex-none h-[60%]">
 
-      <div className="relative z-10 flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-8">
-        <div className="w-full max-w-5xl space-y-12 text-center">
-          {/* Logo/Title */}
-          <div className="space-y-6">
-            <div className="flex items-center justify-center gap-4">
-              <Shield className="h-20 w-20 text-primary" />
-              <h1 className="text-6xl font-extrabold tracking-tight text-foreground">
-                NETWATCH
-              </h1>
-            </div>
-            <p className="text-2xl text-muted-foreground font-light max-w-2xl mx-auto">
-              Enterprise Grade Cyber Intelligence & Threat Monitoring
-            </p>
+        {/* Left Column: Stats & System (3 Cols) */}
+        <div className="col-span-12 md:col-span-3 flex flex-col gap-2 h-full">
+          {/* Main Stats Block */}
+          <div className="grid grid-cols-2 gap-2 flex-none">
+            <Card className="flex flex-col items-center justify-center p-2 bg-primary/10 border-primary/20">
+              <Activity className="h-5 w-5 text-primary mb-1" />
+              <span className="text-2xl font-bold font-mono">{stats.activeSessions}</span>
+              <span className="text-[10px] uppercase text-muted-foreground">Sessions</span>
+            </Card>
+            <Card className="flex flex-col items-center justify-center p-2 bg-primary/10 border-primary/20">
+              <Globe className="h-5 w-5 text-primary mb-1" />
+              <span className="text-2xl font-bold font-mono">{stats.globalSensors}</span>
+              <span className="text-[10px] uppercase text-muted-foreground">Sensors</span>
+            </Card>
           </div>
 
-          {/* Search Interface */}
-          <div className="space-y-6 max-w-3xl mx-auto">
-            <form onSubmit={handleSearch} className="relative shadow-card rounded-xl overflow-hidden">
-              <div className="flex bg-card">
-                <select
-                  value={searchType}
-                  onChange={(e) => setSearchType(e.target.value as any)}
-                  className="w-40 border-r border-border bg-card px-4 py-4 text-sm font-medium focus:outline-none focus:bg-muted/20 hover:bg-muted/10 transition-colors"
-                >
-                  <option value="auto">Auto-Detect</option>
-                  <option value="ip">IP Address</option>
-                  <option value="domain">Domain</option>
-                  <option value="hash">File Hash</option>
-                  <option value="actor">Threat Actor</option>
-                </select>
+          {/* System Health Widget */}
+          <div className="flex-1 min-h-0">
+            <SystemHealth />
+          </div>
+        </div>
 
-                <div className="relative flex-1">
-                  <Search className="absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Search intelligence database..."
-                    className="h-full w-full bg-card pl-14 pr-4 py-4 text-lg focus:outline-none"
-                  />
-                </div>
+        {/* Center: Threat Map (6 Cols) */}
+        <div className="col-span-12 md:col-span-6 h-full min-h-0">
+          <div className="h-full w-full rounded border border-border overflow-hidden relative bg-black">
+            <div className="absolute top-2 left-2 z-10 bg-black/70 px-2 py-1 border border-border/50 text-xs font-mono text-primary">
+              LIVE THREAT FEED // GLOBAL
+            </div>
+            <ThreatMap />
+          </div>
+        </div>
 
-                <button
-                  type="submit"
-                  className="bg-primary px-8 py-4 text-lg font-bold text-primary-foreground hover:bg-primary/90 transition-colors"
-                >
-                  ANALYZE
-                </button>
-              </div>
+        {/* Right Column: Quick Ops & Search (3 Cols) */}
+        <div className="col-span-12 md:col-span-3 flex flex-col gap-2 h-full">
+          {/* Compact Search */}
+          <Card className="flex-none p-2">
+            <form onSubmit={handleSearch} className="flex gap-1">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="CMD > Search Target..."
+                className="flex-1 bg-muted/20 border border-border/50 text-xs font-mono p-2 focus:border-primary focus:outline-none text-primary"
+              />
+              <button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground p-2 rounded-sm">
+                <Search className="h-4 w-4" />
+              </button>
             </form>
+          </Card>
 
-            {/* Quick Examples */}
-            <div className="flex flex-wrap items-center justify-center gap-3 text-sm">
-              <span className="text-muted-foreground font-medium">Popular Searches:</span>
-              <button
-                onClick={() => setSearchQuery("8.8.8.8")}
-                className="px-3 py-1 rounded-full bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors font-mono text-xs"
-              >
-                8.8.8.8
-              </button>
-              <button
-                onClick={() => setSearchQuery("google.com")}
-                className="px-3 py-1 rounded-full bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors font-mono text-xs"
-              >
-                google.com
-              </button>
-              <button
-                onClick={() => setSearchQuery("APT29")}
-                className="px-3 py-1 rounded-full bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors font-mono text-xs"
-              >
-                APT29
-              </button>
-            </div>
-          </div>
-
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-12">
-            <div className="flex flex-col items-center justify-center p-6 bg-card rounded-xl shadow-subtle border border-border">
-              <Activity className="h-8 w-8 text-primary mb-3" />
-              <div className="text-4xl font-bold text-foreground mb-1">{stats.activeThreats.toLocaleString()}</div>
-              <div className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Active Threats</div>
-            </div>
-            <div className="flex flex-col items-center justify-center p-6 bg-card rounded-xl shadow-subtle border border-border">
-              <Globe className="h-8 w-8 text-primary mb-3" />
-              <div className="text-4xl font-bold text-foreground mb-1">{stats.globalSensors}</div>
-              <div className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Global Sensors</div>
-            </div>
-            <div className="flex flex-col items-center justify-center p-6 bg-card rounded-xl shadow-subtle border border-border">
-              <Server className="h-8 w-8 text-primary mb-3" />
-              <div className="text-4xl font-bold text-foreground mb-1">24/7</div>
-              <div className="text-sm font-medium text-muted-foreground uppercase tracking-wide">System Status</div>
-            </div>
+          {/* Quick Tools Grid */}
+          <div className="flex-1 min-h-0">
+            <QuickTools />
           </div>
         </div>
       </div>
-    </>
+
+      {/* Bottom Section: Logs & Analytics (Remaining height) */}
+      <div className="grid grid-cols-12 gap-2 flex-1 min-h-0">
+        {/* Event Log Ticker (8 Cols) */}
+        <div className="col-span-12 md:col-span-8 h-full min-h-0">
+          <EventLog />
+        </div>
+
+        {/* Status / Info Panel (4 Cols) */}
+        <div className="col-span-12 md:col-span-4 h-full min-h-0">
+          <Card title="NODE STATUS" icon={<Server className="h-4 w-4" />} className="h-full">
+            <div className="grid grid-cols-2 gap-2 h-full content-start">
+              <div className="flex items-center justify-between p-2 bg-muted/10 border border-border/30 rounded">
+                <span className="text-[10px] text-muted-foreground">CORE</span>
+                <span className="text-xs font-bold text-green-500">ONLINE</span>
+              </div>
+              <div className="flex items-center justify-between p-2 bg-muted/10 border border-border/30 rounded">
+                <span className="text-[10px] text-muted-foreground">DB</span>
+                <span className="text-xs font-bold text-green-500">SYNCED</span>
+              </div>
+              <div className="flex items-center justify-between p-2 bg-muted/10 border border-border/30 rounded">
+                <span className="text-[10px] text-muted-foreground">API</span>
+                <span className="text-xs font-bold text-green-500">READY</span>
+              </div>
+              <div className="flex items-center justify-between p-2 bg-muted/10 border border-border/30 rounded">
+                <span className="text-[10px] text-muted-foreground">VPN</span>
+                <span className="text-xs font-bold text-muted-foreground">IDLE</span>
+              </div>
+              <div className="col-span-2 mt-auto p-2 border-t border-border/30">
+                <div className="flex justify-between text-[10px] font-mono text-muted-foreground">
+                  <span>BUILD: v2.4.0-RC1</span>
+                  <span>LATENCY: 12ms</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+    </div>
   );
 }

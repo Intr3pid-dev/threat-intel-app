@@ -12,7 +12,7 @@ export function Card({ children, className, title, icon }: CardProps) {
     return (
         <div
             className={cn(
-                "relative overflow-hidden rounded-xl border border-border bg-card p-6 shadow-subtle transition-all duration-200 hover:shadow-card",
+                "relative overflow-hidden border border-border bg-card p-3 shadow-none transition-all duration-200 hover:border-primary/50",
                 className
             )}
         >

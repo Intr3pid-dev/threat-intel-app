@@ -42,44 +42,9 @@ export async function GET() {
             feeds.push(...phishFeeds.slice(0, 7));
         }
 
-        // If all failed, return fallback mock data
+        // If all failed, return empty array
         if (feeds.length === 0) {
-            const mockFeeds = [
-                {
-                    id: "1",
-                    title: "Malicious URL Detected: online",
-                    type: "Malware",
-                    date: new Date().toISOString().split('T')[0],
-                    severity: "Critical",
-                    description: "Phishing campaign targeting financial institutions",
-                    tags: ["phishing", "finance", "urlhaus"],
-                    source: "URLHaus (Mock)",
-                    iocs: ["http://malicious-example.com"]
-                },
-                {
-                    id: "2",
-                    title: "Phishing Site Detected: PayPal",
-                    type: "Phishing",
-                    date: new Date().toISOString().split('T')[0],
-                    severity: "Critical",
-                    description: "Verified phishing URL targeting PayPal users",
-                    tags: ["phishing", "paypal"],
-                    source: "PhishTank (Mock)",
-                    iocs: ["http://paypal-verify.fake.com"]
-                },
-                {
-                    id: "3",
-                    title: "APT29 Targeting Government Agencies",
-                    type: "APT",
-                    date: new Date().toISOString().split('T')[0],
-                    severity: "Critical",
-                    description: "Advanced persistent threat group observed",
-                    tags: ["apt29", "government"],
-                    source: "AlienVault OTX (Mock)"
-                }
-            ];
-
-            return NextResponse.json(mockFeeds);
+            return NextResponse.json([]);
         }
 
         // Sort by date (newest first) and return
@@ -88,20 +53,7 @@ export async function GET() {
     } catch (error) {
         console.error('Feeds API Handler Error:', error);
 
-        // Fallback to mock data if API fails
-        const mockFeeds = [
-            {
-                id: "1",
-                title: "Malicious URL Detected: online",
-                type: "Malware",
-                date: new Date().toISOString().split('T')[0],
-                severity: "Critical",
-                description: "Phishing campaign targeting financial institutions",
-                tags: ["phishing", "finance"],
-                source: "Mock Data"
-            }
-        ];
-
-        return NextResponse.json(mockFeeds);
+        // Return valid empty array if everything fails, do NOT show fake data
+        return NextResponse.json([]);
     }
 }
