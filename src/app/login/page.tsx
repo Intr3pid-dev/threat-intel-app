@@ -52,7 +52,7 @@ export default function LoginPage() {
                             <div className="absolute inset-0 rounded-full border border-primary/50 animate-ping opacity-20" />
                             <Shield className="h-10 w-10 text-primary animate-pulse" />
                         </div>
-                        <h1 className="text-3xl font-bold tracking-widest text-glow text-foreground">NETWATCH</h1>
+                        <h1 className="text-3xl font-bold tracking-widest text-glow text-foreground">OpenThreatData</h1>
                         <p className="text-xs text-primary/80 font-mono mt-2 tracking-[0.2em]">SECURE ACCESS TERMINAL</p>
                     </div>
 

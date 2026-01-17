@@ -46,62 +46,42 @@ export function Sidebar() {
             {/* Sidebar */}
             <aside
                 className={cn(
-                    "fixed left-0 top-0 z-50 h-screen w-64 border-r border-border bg-background/95 backdrop-blur-md transition-transform duration-300 ease-in-out",
+                    "fixed left-0 top-0 z-50 h-screen w-16 border-r border-border bg-background/95 backdrop-blur-md transition-transform duration-300 ease-in-out flex flex-col items-center py-4",
                     // Mobile: slide in/out
                     "md:translate-x-0",
                     sidebarOpen ? "translate-x-0" : "-translate-x-full"
                 )}
             >
-                {/* Header */}
-                <div className="flex h-16 items-center justify-between border-b border-border px-6 bg-card">
-                    <div className="flex items-center gap-2">
-                        <Shield className="h-8 w-8 text-primary" />
-                        <span className="font-sans text-lg font-bold tracking-tight text-foreground">
-                            NETWATCH
-                        </span>
-                    </div>
-                    {/* Close button (mobile only) */}
-                    <button
-                        onClick={closeSidebar}
-                        className="md:hidden rounded-md p-1 hover:bg-accent transition-colors"
-                        aria-label="Close sidebar"
-                    >
-                        <X className="h-5 w-5" />
-                    </button>
+                {/* Header (Logo Only) */}
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-6">
+                    <Shield className="h-6 w-6 text-primary" />
                 </div>
 
                 {/* Navigation */}
-                <nav className="space-y-1 p-4">
+                <nav className="space-y-2 flex-1 w-full px-2">
                     {navItems.map((item) => {
                         const isActive = pathname === item.href;
                         return (
                             <Link
                                 key={item.href}
                                 href={item.href}
+                                title={item.name}
                                 className={cn(
-                                    "flex items-center gap-3 rounded-md px-4 py-3 text-sm font-medium transition-all duration-200",
+                                    "flex h-10 w-10 items-center justify-center rounded-md transition-all duration-200 mx-auto",
                                     isActive
                                         ? "bg-primary text-primary-foreground shadow-subtle"
                                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                                 )}
                             >
                                 <item.icon className="h-5 w-5" />
-                                {item.name}
                             </Link>
                         );
                     })}
                 </nav>
 
-                {/* Status Indicator */}
-                <div className="absolute bottom-4 left-0 w-full px-4">
-                    <div className="rounded-md border border-border bg-card p-3">
-                        <div className="flex items-center gap-2">
-                            <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                            <span className="text-xs font-mono text-muted-foreground">
-                                System Online
-                            </span>
-                        </div>
-                    </div>
+                {/* Status Indicator (Dot Only) */}
+                <div className="mt-auto pb-4">
+                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse ring-4 ring-green-500/20" title="System Online" />
                 </div>
             </aside >
         </>

@@ -1,7 +1,5 @@
-"use client";
-
 import { Card } from "@/components/ui/card";
-import { Search, Globe, FileCode, Shield, Database, Lock, RefreshCcw, Network } from "lucide-react";
+import { Search, Globe, FileCode, Shield, Database, Lock, RefreshCcw, Network, Mail, Activity, Radio } from "lucide-react";
 import Link from "next/link";
 
 export function QuickTools() {
@@ -10,8 +8,11 @@ export function QuickTools() {
         { name: "Hash Check", href: "/tools/hash-lookup", icon: FileCode, color: "text-purple-400" },
         { name: "Domain", href: "/tools/domain-lookup", icon: Network, color: "text-yellow-400" },
         { name: "Sandbox", href: "/tools/sandbox", icon: Shield, color: "text-green-400" },
-        { name: "DB Query", href: "/settings", icon: Database, color: "text-cyan-400" },
+        { name: "SSL Check", href: "/tools/ssl-check", icon: Lock, color: "text-orange-400" },
         { name: "Enc. Tool", href: "/tools/crypto", icon: Lock, color: "text-red-400" },
+        { name: "Email Rep", href: "/tools/email-check", icon: Mail, color: "text-cyan-400" },
+        { name: "Latency", href: "/tools/latency-check", icon: Activity, color: "text-red-400" },
+        { name: "OSINT News", href: "/tools/news-monitor", icon: Radio, color: "text-green-400" },
     ];
 
     return (

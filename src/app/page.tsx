@@ -1,137 +1,176 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, Shield, Activity, Globe, Server, Hash, LayoutGrid } from "lucide-react";
-import { ThreatMap } from "@/components/ui/threat-map";
-import { Card } from "@/components/ui/card";
-import { SystemHealth } from "@/components/dashboard/system-health";
-import { EventLog } from "@/components/dashboard/event-log";
-import { QuickTools } from "@/components/dashboard/quick-tools";
+import {
+  Search,
+  Globe,
+  Hash,
+  Radio,
+  Shield,
+  Lock,
+  Mail,
+  Activity,
+  Network,
+  Target,
+  Cpu
+} from "lucide-react";
+import { GlassTile } from "@/components/ui/glass-tile";
 
-export default function Dashboard() {
+const FEATURES = [
+  {
+    title: "IP Intelligence",
+    description: "Lookup IP reputation, geolocation & threat data",
+    icon: Globe,
+    href: "/tools/ip-lookup",
+    gradient: "from-blue-500/20 to-cyan-500/5"
+  },
+  {
+    title: "Domain Intel",
+    description: "WHOIS, DNS records & domain reputation",
+    icon: Network,
+    href: "/tools/domain-lookup",
+    gradient: "from-purple-500/20 to-pink-500/5"
+  },
+  {
+    title: "Hash Analysis",
+    description: "Check file hashes against malware databases",
+    icon: Hash,
+    href: "/tools/hash-lookup",
+    gradient: "from-orange-500/20 to-red-500/5"
+  },
+  {
+    title: "Threat News",
+    description: "Real-time cybersecurity news & mentions",
+    icon: Radio,
+    href: "/tools/news-monitor",
+    gradient: "from-green-500/20 to-emerald-500/5"
+  },
+  {
+    title: "SSL Inspector",
+    description: "Analyze website SSL certificates",
+    icon: Lock,
+    href: "/tools/ssl-check",
+    gradient: "from-yellow-500/20 to-amber-500/5"
+  },
+  {
+    title: "Email Reputation",
+    description: "Verify email validity & reputation",
+    icon: Mail,
+    href: "/tools/email-check",
+    gradient: "from-cyan-500/20 to-blue-500/5"
+  },
+  {
+    title: "Latency Monitor",
+    description: "Real-time endpoint response times",
+    icon: Activity,
+    href: "/tools/latency-check",
+    gradient: "from-red-500/20 to-orange-500/5"
+  },
+  {
+    title: "MITRE ATT&CK",
+    description: "Explore adversary tactics & techniques",
+    icon: Target,
+    href: "/tools/mitre",
+    gradient: "from-indigo-500/20 to-purple-500/5"
+  },
+  {
+    title: "Threat Feeds",
+    description: "Aggregated threat intelligence feeds",
+    icon: Cpu,
+    href: "/feeds",
+    gradient: "from-pink-500/20 to-rose-500/5"
+  }
+];
+
+export default function HomePage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
-  const [stats, setStats] = useState({
-    activeThreats: 0,
-    globalSensors: 0,
-    monitoringStatus: "Init...",
-    activeSessions: 0
-  });
-
-  useEffect(() => {
-    fetch('/api/stats')
-      .then(res => res.json())
-      .then(data => setStats(data))
-      .catch(console.error);
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    // Simple auto-routing for dense UI
-    router.push(`/tools/ip-lookup?q=${encodeURIComponent(searchQuery)}`);
+
+    const query = searchQuery.trim();
+
+    // Smart routing based on input pattern
+    const ipPattern = /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/;
+    const hashPattern = /^[a-fA-F0-9]{32,64}$/;
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const domainPattern = /^[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9]?\.[a-zA-Z]{2,}$/;
+
+    if (ipPattern.test(query)) {
+      router.push(`/tools/ip-lookup?q=${encodeURIComponent(query)}`);
+    } else if (hashPattern.test(query)) {
+      router.push(`/tools/hash-lookup?q=${encodeURIComponent(query)}`);
+    } else if (emailPattern.test(query)) {
+      router.push(`/tools/email-check?q=${encodeURIComponent(query)}`);
+    } else if (domainPattern.test(query)) {
+      router.push(`/tools/domain-lookup?q=${encodeURIComponent(query)}`);
+    } else {
+      // Default to news search for keywords
+      router.push(`/tools/news-monitor?q=${encodeURIComponent(query)}`);
+    }
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-3.5rem)] gap-2 p-2 overflow-hidden bg-background text-foreground">
-      {/* Top Section: Map & Key Stats (Approx 60% height) */}
-      <div className="grid grid-cols-12 gap-2 flex-none h-[60%]">
-
-        {/* Left Column: Stats & System (3 Cols) */}
-        <div className="col-span-12 md:col-span-3 flex flex-col gap-2 h-full">
-          {/* Main Stats Block */}
-          <div className="grid grid-cols-2 gap-2 flex-none">
-            <Card className="flex flex-col items-center justify-center p-2 bg-primary/10 border-primary/20">
-              <Activity className="h-5 w-5 text-primary mb-1" />
-              <span className="text-2xl font-bold font-mono">{stats.activeSessions}</span>
-              <span className="text-[10px] uppercase text-muted-foreground">Sessions</span>
-            </Card>
-            <Card className="flex flex-col items-center justify-center p-2 bg-primary/10 border-primary/20">
-              <Globe className="h-5 w-5 text-primary mb-1" />
-              <span className="text-2xl font-bold font-mono">{stats.globalSensors}</span>
-              <span className="text-[10px] uppercase text-muted-foreground">Sensors</span>
-            </Card>
-          </div>
-
-          {/* System Health Widget */}
-          <div className="flex-1 min-h-0">
-            <SystemHealth />
-          </div>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 md:p-12">
+      {/* Hero Section */}
+      <div className="w-full max-w-4xl text-center mb-12">
+        <div className="flex items-center justify-center gap-3 mb-6">
+          <Shield className="h-12 w-12 text-primary" />
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            Open<span className="text-primary">ThreatData</span>
+          </h1>
         </div>
+        <p className="text-lg text-muted-foreground mb-8">
+          Open Source Intelligence & Threat Analysis Platform
+        </p>
 
-        {/* Center: Threat Map (6 Cols) */}
-        <div className="col-span-12 md:col-span-6 h-full min-h-0">
-          <div className="h-full w-full rounded border border-border overflow-hidden relative bg-black">
-            <div className="absolute top-2 left-2 z-10 bg-black/70 px-2 py-1 border border-border/50 text-xs font-mono text-primary">
-              LIVE THREAT FEED // GLOBAL
-            </div>
-            <ThreatMap />
+        {/* Global Search */}
+        <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">
+          <div className="relative group">
+            <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search IP, domain, hash, email, or keyword..."
+              className="w-full h-14 pl-14 pr-32 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 text-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/50"
+            />
+            <button
+              type="submit"
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-xl font-semibold transition-colors"
+            >
+              Analyze
+            </button>
           </div>
-        </div>
+          <p className="text-xs text-muted-foreground mt-3">
+            Auto-detects input type and routes to appropriate tool
+          </p>
+        </form>
+      </div>
 
-        {/* Right Column: Quick Ops & Search (3 Cols) */}
-        <div className="col-span-12 md:col-span-3 flex flex-col gap-2 h-full">
-          {/* Compact Search */}
-          <Card className="flex-none p-2">
-            <form onSubmit={handleSearch} className="flex gap-1">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="CMD > Search Target..."
-                className="flex-1 bg-muted/20 border border-border/50 text-xs font-mono p-2 focus:border-primary focus:outline-none text-primary"
-              />
-              <button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground p-2 rounded-sm">
-                <Search className="h-4 w-4" />
-              </button>
-            </form>
-          </Card>
-
-          {/* Quick Tools Grid */}
-          <div className="flex-1 min-h-0">
-            <QuickTools />
-          </div>
+      {/* Feature Tiles Grid */}
+      <div className="w-full max-w-6xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+          {FEATURES.map((feature) => (
+            <GlassTile
+              key={feature.href}
+              title={feature.title}
+              description={feature.description}
+              icon={feature.icon}
+              href={feature.href}
+              gradient={feature.gradient}
+            />
+          ))}
         </div>
       </div>
 
-      {/* Bottom Section: Logs & Analytics (Remaining height) */}
-      <div className="grid grid-cols-12 gap-2 flex-1 min-h-0">
-        {/* Event Log Ticker (8 Cols) */}
-        <div className="col-span-12 md:col-span-8 h-full min-h-0">
-          <EventLog />
-        </div>
-
-        {/* Status / Info Panel (4 Cols) */}
-        <div className="col-span-12 md:col-span-4 h-full min-h-0">
-          <Card title="NODE STATUS" icon={<Server className="h-4 w-4" />} className="h-full">
-            <div className="grid grid-cols-2 gap-2 h-full content-start">
-              <div className="flex items-center justify-between p-2 bg-muted/10 border border-border/30 rounded">
-                <span className="text-[10px] text-muted-foreground">CORE</span>
-                <span className="text-xs font-bold text-green-500">ONLINE</span>
-              </div>
-              <div className="flex items-center justify-between p-2 bg-muted/10 border border-border/30 rounded">
-                <span className="text-[10px] text-muted-foreground">DB</span>
-                <span className="text-xs font-bold text-green-500">SYNCED</span>
-              </div>
-              <div className="flex items-center justify-between p-2 bg-muted/10 border border-border/30 rounded">
-                <span className="text-[10px] text-muted-foreground">API</span>
-                <span className="text-xs font-bold text-green-500">READY</span>
-              </div>
-              <div className="flex items-center justify-between p-2 bg-muted/10 border border-border/30 rounded">
-                <span className="text-[10px] text-muted-foreground">VPN</span>
-                <span className="text-xs font-bold text-muted-foreground">IDLE</span>
-              </div>
-              <div className="col-span-2 mt-auto p-2 border-t border-border/30">
-                <div className="flex justify-between text-[10px] font-mono text-muted-foreground">
-                  <span>BUILD: v2.4.0-RC1</span>
-                  <span>LATENCY: 12ms</span>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </div>
-      </div>
+      {/* Footer */}
+      <footer className="mt-16 text-center text-xs text-muted-foreground">
+        <p>Powered by public OSINT APIs • No login required</p>
+      </footer>
     </div>
   );
 }

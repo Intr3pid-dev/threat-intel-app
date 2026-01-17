@@ -24,8 +24,12 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
     }, [checkSession]);
 
     useEffect(() => {
-        if (!isChecking && !isAuthenticated && pathname !== "/login") {
-            router.push("/login");
+        // Protected routes that ALWAYS require login
+        const protectedRoutes = ["/settings", "/admin"];
+        const isProtected = protectedRoutes.some(route => pathname.startsWith(route));
+
+        if (!isChecking && !isAuthenticated && isProtected) {
+            router.push(`/login?redirect=${encodeURIComponent(pathname)}`);
         }
     }, [isAuthenticated, isChecking, pathname, router]);
 
@@ -37,8 +41,11 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
         );
     }
 
-    // Don't render children if not authenticated (unless on login page)
-    if (!isAuthenticated && pathname !== "/login") {
+    // Protected routes check for rendering
+    const protectedRoutes = ["/settings", "/admin"];
+    const isProtected = protectedRoutes.some(route => pathname.startsWith(route));
+
+    if (!isAuthenticated && isProtected) {
         return null;
     }
 

@@ -1,16 +1,17 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card } from "@/components/ui/card";
-import { Search, MapPin, Globe, Shield, Server } from "lucide-react";
+import { Search, MapPin, Globe, Shield, Server, ArrowLeft } from "lucide-react";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 
 const MapComponent = dynamic(() => import("@/components/ui/map"), {
     ssr: false,
 });
 
-export default function IPLookupPage() {
+function IPLookupContent() {
     const searchParams = useSearchParams();
     const [ip, setIp] = useState("");
     const [loading, setLoading] = useState(false);
@@ -22,7 +23,7 @@ export default function IPLookupPage() {
             setIp(query);
             handleSearchWithQuery(query);
         }
-    }, []);
+    }, [searchParams]);
 
     const handleSearchWithQuery = async (query: string) => {
         setLoading(true);
@@ -59,35 +60,40 @@ export default function IPLookupPage() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
-                <h1 className="text-3xl font-bold tracking-tight text-foreground">IP Lookup</h1>
-            </div>
+        <div className="min-h-screen p-6 md:p-12">
+            <div className="max-w-6xl mx-auto">
+                <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-6">
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Hub
+                </Link>
+                <div className="flex items-center gap-3 mb-6">
+                    <Globe className="h-8 w-8 text-primary" />
+                    <h1 className="text-3xl font-bold tracking-tight">IP Intelligence</h1>
+                </div>
 
-            <Card>
-                <form onSubmit={handleSearch} className="flex gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                        <input
-                            type="text"
-                            value={ip}
-                            onChange={(e) => setIp(e.target.value)}
-                            placeholder="Enter IP address (e.g., 8.8.8.8)"
-                            className="h-11 w-full rounded-md border border-border bg-background pl-10 font-mono text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                        />
-                    </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
-                    >
-                        {loading ? "Scanning..." : "Analyze"}
-                    </button>
-                </form>
-            </Card>
+                <Card className="mb-6">
+                    <form onSubmit={handleSearch} className="flex gap-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                            <input
+                                type="text"
+                                value={ip}
+                                onChange={(e) => setIp(e.target.value)}
+                                placeholder="Enter IP address (e.g., 8.8.8.8)"
+                                className="h-11 w-full rounded-md border border-border bg-background pl-10 font-mono text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                        >
+                            {loading ? "Scanning..." : "Analyze"}
+                        </button>
+                    </form>
+                </Card>
 
-            {
-                result && (
+                {result && (
                     <div className="grid gap-6 md:grid-cols-2">
                         <Card title="Geo-Location" icon={<MapPin className="h-4 w-4" />}>
                             <div className="space-y-4">
@@ -141,8 +147,20 @@ export default function IPLookupPage() {
                             </Card>
                         </div>
                     </div>
-                )
-            }
-        </div >
+                )}
+            </div>
+        </div>
+    );
+}
+
+export default function IPLookupPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+            </div>
+        }>
+            <IPLookupContent />
+        </Suspense>
     );
 }
