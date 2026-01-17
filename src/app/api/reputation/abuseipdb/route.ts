@@ -12,22 +12,14 @@ export async function GET(request: Request) {
         const API_KEY = process.env.ABUSEIPDB_API_KEY;
 
         if (!API_KEY) {
-            // Return mock data if no API key
+            // No API key - return minimal data indicating no reputation check was done
             return NextResponse.json({
                 ip,
-                isWhitelisted: false,
                 abuseConfidenceScore: 0,
-                countryCode: 'US',
-                usageType: 'Data Center/Web Hosting/Transit',
-                isp: 'Google LLC',
-                domain: 'google.com',
                 totalReports: 0,
-                numDistinctUsers: 0,
-                lastReportedAt: null,
                 isPublic: true,
-                ipVersion: 4,
                 isTor: false,
-                source: 'AbuseIPDB (Mock - Add API key for live data)'
+                source: 'No AbuseIPDB API key configured'
             });
         }
 
@@ -38,7 +30,8 @@ export async function GET(request: Request) {
                 headers: {
                     'Key': API_KEY,
                     'Accept': 'application/json'
-                }
+                },
+                signal: AbortSignal.timeout(8000)
             }
         );
 
@@ -55,12 +48,13 @@ export async function GET(request: Request) {
     } catch (error) {
         console.error('AbuseIPDB API Error:', error);
 
+        // Return minimal fallback without fake data
         return NextResponse.json({
             ip,
             abuseConfidenceScore: 0,
             totalReports: 0,
-            source: 'AbuseIPDB (Error - using fallback)',
-            error: 'Failed to fetch reputation data'
+            source: 'AbuseIPDB unavailable',
+            error: 'Reputation check failed'
         });
     }
 }

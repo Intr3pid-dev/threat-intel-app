@@ -5,8 +5,9 @@ export async function GET() {
         // PhishTank provides a JSON feed of verified phishing URLs
         const response = await fetch('http://data.phishtank.com/data/online-valid.json', {
             headers: {
-                'User-Agent': 'phishtank/netwatch-threat-intel'
-            }
+                'User-Agent': 'phishtank/openthreatdata'
+            },
+            signal: AbortSignal.timeout(10000)
         });
 
         if (!response.ok) {
@@ -33,37 +34,7 @@ export async function GET() {
         return NextResponse.json(phishingFeeds);
     } catch (error) {
         console.error('PhishTank API Error:', error);
-
-        // Return mock phishing data
-        const mockData = [
-            {
-                id: 'phishtank-mock-1',
-                title: 'Phishing Site Detected: PayPal',
-                type: 'Phishing',
-                date: new Date().toISOString().split('T')[0],
-                severity: 'Critical',
-                description: 'Verified phishing URL targeting PayPal users',
-                tags: ['phishing', 'paypal', 'phishtank'],
-                source: 'PhishTank (Mock)',
-                iocs: ['http://paypal-verify-account.suspicious-domain.com'],
-                verified: true,
-                online: true
-            },
-            {
-                id: 'phishtank-mock-2',
-                title: 'Phishing Site Detected: Microsoft',
-                type: 'Phishing',
-                date: new Date().toISOString().split('T')[0],
-                severity: 'Critical',
-                description: 'Verified phishing URL targeting Microsoft users',
-                tags: ['phishing', 'microsoft', 'phishtank'],
-                source: 'PhishTank (Mock)',
-                iocs: ['http://microsoft-login-secure.fake-domain.net'],
-                verified: true,
-                online: true
-            }
-        ];
-
-        return NextResponse.json(mockData);
+        // Return empty array instead of mock data for production
+        return NextResponse.json([]);
     }
 }
