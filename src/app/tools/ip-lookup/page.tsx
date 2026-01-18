@@ -11,11 +11,14 @@ const MapComponent = dynamic(() => import("@/components/ui/map"), {
     ssr: false,
 });
 
+import { containsProfanity } from "@/lib/security";
+
 function IPLookupContent() {
     const searchParams = useSearchParams();
     const [ip, setIp] = useState("");
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<any>(null);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         const query = searchParams.get('q');
@@ -26,6 +29,12 @@ function IPLookupContent() {
     }, [searchParams]);
 
     const handleSearchWithQuery = async (query: string) => {
+        if (containsProfanity(query)) {
+            setError("Input contains restricted keywords.");
+            return;
+        }
+        setError("");
+
         setLoading(true);
         setResult(null);
 
@@ -72,24 +81,30 @@ function IPLookupContent() {
                 </div>
 
                 <Card className="mb-6">
-                    <form onSubmit={handleSearch} className="flex gap-4">
-                        <div className="relative flex-1">
-                            <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                            <input
-                                type="text"
-                                value={ip}
-                                onChange={(e) => setIp(e.target.value)}
-                                placeholder="Enter IP address (e.g., 8.8.8.8)"
-                                className="h-11 w-full rounded-md border border-border bg-background pl-10 font-mono text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                            />
+                    <form onSubmit={handleSearch} className="flex flex-col gap-2">
+                        <div className="flex gap-4">
+                            <div className="relative flex-1">
+                                <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                                <input
+                                    type="text"
+                                    value={ip}
+                                    onChange={(e) => {
+                                        setIp(e.target.value);
+                                        setError("");
+                                    }}
+                                    placeholder="Enter IP address (e.g., 8.8.8.8)"
+                                    className="h-11 w-full rounded-md border border-border bg-background pl-10 font-mono text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                            >
+                                {loading ? "Scanning..." : "Analyze"}
+                            </button>
                         </div>
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
-                        >
-                            {loading ? "Scanning..." : "Analyze"}
-                        </button>
+                        {error && <p className="text-destructive text-sm font-bold">{error}</p>}
                     </form>
                 </Card>
 

@@ -4,12 +4,22 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Search, Radio, ExternalLink, Calendar } from "lucide-react";
 
+import { containsProfanity } from "@/lib/security";
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
+
 export default function NewsMonitorPage() {
     const [query, setQuery] = useState("");
     const [articles, setArticles] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     const fetchNews = async (searchTerm: string) => {
+        if (containsProfanity(searchTerm)) {
+            setError("Search term contains restricted keywords.");
+            return;
+        }
+        setError("");
         setLoading(true);
         try {
             const res = await fetch(`/api/news?q=${encodeURIComponent(searchTerm)}`);
@@ -35,7 +45,15 @@ export default function NewsMonitorPage() {
     }, []);
 
     return (
-        <div className="space-y-6 h-full flex flex-col">
+        <div className="space-y-6 h-full flex flex-col p-6 max-w-6xl mx-auto w-full">
+            <Link
+                href="/"
+                className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Hub
+            </Link>
+
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
                     <Radio className="h-6 w-6 text-primary" />
@@ -43,25 +61,31 @@ export default function NewsMonitorPage() {
                 </h1>
             </div>
 
-            <Card className="flex-none">
-                <form onSubmit={handleSearch} className="flex gap-4">
-                    <div className="relative flex-1">
-                        <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
-                        <input
-                            type="text"
-                            value={query}
-                            onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Monitor keyword (e.g. 'APT41', 'Zero-Day', 'Company Name')"
-                            className="h-11 w-full rounded-md border border-border bg-background pl-10 font-mono text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                        />
+            <Card className="flex-none p-4">
+                <form onSubmit={handleSearch} className="flex flex-col gap-2">
+                    <div className="flex gap-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+                            <input
+                                type="text"
+                                value={query}
+                                onChange={(e) => {
+                                    setQuery(e.target.value);
+                                    setError("");
+                                }}
+                                placeholder="Monitor keyword (e.g. 'APT41', 'Zero-Day', 'Company Name')"
+                                className="h-11 w-full rounded-md border border-border bg-background pl-10 font-mono text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                            />
+                        </div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
+                        >
+                            {loading ? "Scanning..." : "Monitor"}
+                        </button>
                     </div>
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:opacity-50"
-                    >
-                        {loading ? "Scanning..." : "Monitor"}
-                    </button>
+                    {error && <p className="text-destructive text-sm font-bold">{error}</p>}
                 </form>
             </Card>
 

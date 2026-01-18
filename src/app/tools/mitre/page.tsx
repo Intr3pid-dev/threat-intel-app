@@ -27,36 +27,56 @@ export default function MitrePage() {
 
             {/* MITRE Navigator Embed */}
             <div className="max-w-6xl mx-auto">
-                <Card className="p-0 overflow-hidden">
-                    <div className="bg-muted/20 p-4 border-b border-border flex items-center justify-between">
-                        <span className="text-sm font-mono text-muted-foreground">
-                            attack.mitre.org/matrices/enterprise
-                        </span>
+                {/* MITRE Navigator Launcher */}
+                <div className="max-w-6xl mx-auto">
+                    <Card className="p-12 text-center bg-gradient-to-br from-background to-muted/20 flex flex-col items-center justify-center border-dashed border-2">
+                        <div className="bg-primary/10 p-4 rounded-full mb-6">
+                            <Target className="h-16 w-16 text-primary" />
+                        </div>
+                        <h2 className="text-2xl font-bold mb-4">Launch Interactive Matrix</h2>
+                        <p className="text-muted-foreground max-w-lg mb-8">
+                            The MITRE ATT&CK Matrix requires a full browser window for the best experience.
+                            Security policies prevent embedding the interactive view directly.
+                        </p>
                         <a
-                            href="https://attack.mitre.org"
+                            href="https://attack.mitre.org/matrices/enterprise/"
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 text-primary hover:underline text-sm"
+                            className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-lg font-bold text-lg transition-all transform hover:scale-105"
                         >
-                            Open in new tab <ExternalLink className="h-3 w-3" />
+                            Open Enterprise Matrix <ExternalLink className="h-5 w-5" />
                         </a>
-                    </div>
-                    <iframe
-                        src="https://attack.mitre.org/matrices/enterprise/"
-                        className="w-full h-[70vh] border-0"
-                        title="MITRE ATT&CK Matrix"
-                        sandbox="allow-scripts allow-same-origin allow-popups"
-                    />
-                </Card>
+                    </Card>
 
-                <div className="mt-6 text-center text-xs text-muted-foreground">
-                    <p>Content provided by MITRE Corporation. This is an embedded view.</p>
-                    <p className="mt-1">
-                        For full interactivity, visit{" "}
-                        <a href="https://attack.mitre.org" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                            attack.mitre.org
-                        </a>
-                    </p>
+                    <div className="mt-8 grid md:grid-cols-3 gap-6">
+                        <Card className="p-4 hover:bg-muted/50 transition-colors">
+                            <h3 className="font-bold flex items-center gap-2 mb-2">
+                                <ExternalLink className="h-4 w-4 text-primary" /> Enterprise
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                Adversary behavior in Windows, macOS, Linux, and Cloud environments.
+                            </p>
+                            <a href="https://attack.mitre.org/matrices/enterprise/" target="_blank" className="text-xs text-primary mt-2 block hover:underline">Launch Enterprise &rarr;</a>
+                        </Card>
+                        <Card className="p-4 hover:bg-muted/50 transition-colors">
+                            <h3 className="font-bold flex items-center gap-2 mb-2">
+                                <ExternalLink className="h-4 w-4 text-purple-500" /> Mobile
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                Techniques used against iOS and Android devices.
+                            </p>
+                            <a href="https://attack.mitre.org/matrices/mobile/" target="_blank" className="text-xs text-primary mt-2 block hover:underline">Launch Mobile &rarr;</a>
+                        </Card>
+                        <Card className="p-4 hover:bg-muted/50 transition-colors">
+                            <h3 className="font-bold flex items-center gap-2 mb-2">
+                                <ExternalLink className="h-4 w-4 text-orange-500" /> ICS
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                Industrial Control Systems behavior and tradecraft.
+                            </p>
+                            <a href="https://attack.mitre.org/matrices/ics/" target="_blank" className="text-xs text-primary mt-2 block hover:underline">Launch ICS &rarr;</a>
+                        </Card>
+                    </div>
                 </div>
             </div>
         </div>

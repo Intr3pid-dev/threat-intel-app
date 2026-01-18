@@ -7,6 +7,8 @@ import { Search, Lock, ShieldCheck, AlertTriangle, ArrowLeft } from "lucide-reac
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
+import { containsProfanity } from "@/lib/security";
+
 function SSLCheckContent() {
     const searchParams = useSearchParams();
     const [domain, setDomain] = useState("");
@@ -24,6 +26,12 @@ function SSLCheckContent() {
 
     const handleCheck = async (target: string) => {
         if (!target) return;
+
+        if (containsProfanity(target)) {
+            setError("Input contains restricted keywords.");
+            return;
+        }
+
         setLoading(true);
         setResult(null);
         setError(null);
@@ -68,7 +76,10 @@ function SSLCheckContent() {
                             <input
                                 type="text"
                                 value={domain}
-                                onChange={(e) => setDomain(e.target.value)}
+                                onChange={(e) => {
+                                    setDomain(e.target.value);
+                                    if (error === "Input contains restricted keywords.") setError(null);
+                                }}
                                 placeholder="Enter domain (e.g. google.com)"
                                 className="h-11 w-full rounded-md bg-background border border-border pl-9 text-sm focus:outline-none focus:border-primary transition-colors"
                             />

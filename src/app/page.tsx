@@ -16,6 +16,7 @@ import {
   Cpu
 } from "lucide-react";
 import { GlassTile } from "@/components/ui/glass-tile";
+import { cn } from "@/lib/utils";
 
 const FEATURES = [
   {
@@ -83,13 +84,22 @@ const FEATURES = [
   }
 ];
 
+import { containsProfanity } from "@/lib/security";
+
 export default function HomePage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
+  const [error, setError] = useState("");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     if (!searchQuery.trim()) return;
+
+    if (containsProfanity(searchQuery)) {
+      setError("Input contains restricted keywords.");
+      return;
+    }
 
     const query = searchQuery.trim();
 
@@ -134,9 +144,15 @@ export default function HomePage() {
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setError("");
+              }}
               placeholder="Search IP, domain, hash, email, or keyword..."
-              className="w-full h-14 pl-14 pr-32 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 text-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/50"
+              className={cn(
+                "w-full h-14 pl-14 pr-32 rounded-2xl bg-white/5 backdrop-blur-xl border border-white/10 text-lg focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all placeholder:text-muted-foreground/50",
+                error && "border-destructive focus:border-destructive focus:ring-destructive/20"
+              )}
             />
             <button
               type="submit"
@@ -145,6 +161,7 @@ export default function HomePage() {
               Analyze
             </button>
           </div>
+          {error && <p className="text-destructive text-sm mt-2 font-bold">{error}</p>}
           <p className="text-xs text-muted-foreground mt-3">
             Auto-detects input type and routes to appropriate tool
           </p>
